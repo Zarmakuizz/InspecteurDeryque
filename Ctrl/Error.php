@@ -26,6 +26,10 @@ class Error
 
     /** Error 418 when a suspicious activity seems to be detected. */
 	public function teapot() {
+	    if(DEBUG){
+	        error_log("TEAPOT reached".PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	        error_log(print_r(debug_backtrace(),true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	    }
 		$this->send_header('418 I\'m a teapot');
 		CNavigation::setTitle('Error 418');
 		ErrorView::showError(418, _('I\'m a teapot'), "600px-Tetsubin.jpg");
@@ -33,6 +37,10 @@ class Error
 
     /** Error 500 */
 	public function server($error = 'Erreur interne du serveur') {
+	    if(DEBUG){
+	        error_log("Error 500 reached".PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	        error_log(print_r(debug_backtrace(),true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	    }
 		$this->send_header('500 Internal Server Error');
 		CNavigation::setTitle('Error 500');
 		ErrorView::showError(500, 'Erreur interne du serveur', "669px-The.Matrix.glmatrix.2.png", $error);
@@ -40,6 +48,10 @@ class Error
 
 	/** Eror 400 */
 	public function bad_request(){
+	    if(DEBUG){
+	        error_log("TEAPOT reached".PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	        error_log(print_r(debug_backtrace(),true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	    }
 		$this->send_header('400 Bad Request');
 		CNavigation::setTitle('Error 400');
 		ErrorView::showError(400, 'Bad Request', "invalid_argument.jpg");
@@ -47,6 +59,10 @@ class Error
 
 	/** Error 401 **/
 	public function unauthorized() {
+	    if(DEBUG){
+	        error_log("TEAPOT reached".PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	        error_log(print_r(debug_backtrace(),true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	    }
 		$this->send_header('401 Unauthorized');
 		CNavigation::setTitle('Error 401');
 		ErrorView::showError(401, 'Authentification required', '401_polytech.jpg');
