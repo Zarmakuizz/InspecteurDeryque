@@ -6,14 +6,21 @@
  */
 class HL7File implements FileType {
 
-	/** Check file's data type.
-	 * @param $file The file. NOTE: unused parameter.
-	 * @param $extension The file extension.
-	 * @return TRUE or FALSE.
-	 * FIXME does not check anything at all.
+	/** Check file's data type using its root element.
+	 * @param $file The file.
+	 * @param $extension The file extension. NOTE: unused parameter.
+	 * @return TRUE if HL7or FALSE.
 	 */
     public static function isOfThisDataType($file, $extension) {
-        return TRUE;
+        $xml = new XMLReader();
+        $xml->open($file);
+        
+        // Skip comments and such
+        while($xml->nodeType != XMLReader::ELEMENT)
+            $xml->read();
+        // Now we are at the root element
+        if ($xml->localName != 'AnnotatedECG') return false;
+        return ($xml->getAttribute('xmlns') == 'urn:hl7-org:v3');
     }
 
     /** Splits words separated by whitespace(s).
