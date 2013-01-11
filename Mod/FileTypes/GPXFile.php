@@ -168,7 +168,7 @@ END;
 			<select name="assoc_$sum" id="assoc_$sum">
 END;
 		foreach ($statements_list as $r) {
-			echo '<option value="',    htmlspecialchars($r['name']), '">',    htmlspecialchars($r['name']), " (",    htmlspecialchars($r['modname']), ")", "</option>";
+		    echo '<option value="',                 htmlspecialchars($r['name']), '">',                         htmlspecialchars($r['name']), " (",                htmlspecialchars($r['modname']), ")", "</option>";
 		}
 		echo <<<END
 			</select>

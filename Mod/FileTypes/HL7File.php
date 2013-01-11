@@ -9,11 +9,14 @@ class HL7File implements FileType {
 	/** Check file's data type using its root element.
 	 * @param $file The file.
 	 * @param $extension The file extension. NOTE: unused parameter.
-	 * @return TRUE if HL7or FALSE.
+	 * @return TRUE if HL7 or FALSE.
 	 */
     public static function isOfThisDataType($file, $extension) {
         $xml = new XMLReader();
-        $xml->open($file);
+        if(!strncmp($file,'<?xml version="1.',17))// $file=xml
+            $xml->xml($file);
+        else // $file = file path
+            $xml->open($file);
         
         // Skip comments and such
         while($xml->nodeType != XMLReader::ELEMENT)
@@ -122,7 +125,7 @@ END;
     private static function displayDataAssociationChoice($nameData) {
         $statements_list = DataMod::getStatements();
         $sum = sha1($nameData);
-        $new_url = CNavigation::generateUrlToApp('Data', 'choose', ['iframe_mode' => true]);
+        $new_url = CNavigation::generateUrlToApp('Data', 'form', ['iframe_mode' => true, 'return' => 'list']);
         echo <<<END
 		<label for="assoc_$sum">Selectionnez le relevé</label>
 		<div class="controls">
