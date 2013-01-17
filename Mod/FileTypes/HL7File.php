@@ -146,7 +146,6 @@ END;
 	 * @param $data Data from an xml string.
 	 */
     public static function submitSelection($data) {
-
         $dom = new DOMDocument();
 
         $dom->loadXML($data);
@@ -174,17 +173,31 @@ END;
             $tableaux['timestamp'][] = $startTime + $j * $increment;
         }
 
-        R::begin();
+        //R::begin();
+        if(DEBUG) error_log("Début de la boucle foreach de submitSelection() à ".date('H:i:s').PHP_EOL, 3, "log.log");
+        /*
+        !!! Erreur par ici !!!
+        15 passages dans la boucle. Il n'y a qu'au dernier passage 
+        que l'on entre dans les deux if successifs.
+        */
         // storing data per each statement
         foreach ($_POST as $key => $post) {
+            if(DEBUG) error_log("A", 3, "log.log");
             if (self::startswith($key, "assoc_")) {
+                if(DEBUG) error_log("B", 3, "log.log");
                 $sum_assoc = strrchr($key, '_');
                 if (isset($_POST['data' . $sum_assoc])) {
+                    if(DEBUG) error_log("C", 3, "log.log");
                     self::saveData($post, $_POST['data' . $sum_assoc], $tableaux);
                 }
             }
         }
-        R::commit();
+        /*
+        !!! Cette étape n'est jamais atteinte. !!!
+        une erreur 418 est générée à la place.
+        */
+        if(DEBUG) error_log("Fin de la boucle foreach de submitSelection() à".date('H:i:s').PHP_EOL, 3, "log.log");
+        //R::commit();
 
         new CMessage('Vos relevés ont été ajoutés avec succès ! Vous pouvez en sélectionner d\'autres, ou bien revenir au Tableau de Bord.');
         CNavigation::redirectToApp('Import', 'dataSelection');
@@ -196,32 +209,37 @@ END;
      * @param $data An array of data to store.
      */
     private static function saveData($name_statement_prefix, $data_type, $tableaux) {
-
+        if(DEBUG){ // Analyse input data
+            error_log('Début de saveData() à'.date('H:i:s').PHP_EOL,3,'log.log');
+	        //error_log('$name_statement_prefix:'.PHP_EOL.print_r($name_statement_prefix,true).PHP_EOL, 3, "log.log");
+	        //error_log('$data_type:'.PHP_EOL.print_r($data_type,true).PHP_EOL, 3, "log.log");
+	        //error_log('$tableaux:'.PHP_EOL.print_r($tableaux,true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+	    }
         $multi_releve = new StatementComposition($name_statement_prefix,$_SESSION['user']);
 
 
         for ($sequence = 1; $sequence < count($tableaux) - 1; $sequence++) {
-
-            $name_statement = $name_statement_prefix . " (" . $tableaux['names'][$sequence] . ")";
-
+            $name_statement = $name_statement_prefix . "_" . $tableaux['names'][$sequence] . "_";
             $r = self::create_statement($name_statement);
 
-            $statement = DataMod::getStatement($name_statement);
-
-            //echo print_r($statement) . "\n";
+            $statement = DataMod::getStatement($name_statement);//r);
 
             $b_statement = R::load('releve', $statement['id']);
-
+            if(DEBUG){ // Analyse input data
+	            error_log('Relevé '.$name_statement.' créé à'.date('H:i:s').PHP_EOL,3,'log.log');
+	        }
             if (!$statement)
-                CTools::hackError();
-
+                CTools::hackError(); /* !!! TEAPOT REACHED !!! */
+            R::begin();
             $n_datamod = DataMod::loadDataType($statement['modname']);
             $variables = $n_datamod->getVariables();
 
             $datamod = $n_datamod->initialize();
 
             for ($i = 0; $i < count($tableaux['timestamp']); $i++) {
-
+                if(DEBUG){ // Analyse input data
+    	            error_log(' step '.$i.' à'.date('H:i:s').PHP_EOL,3,'log.log');
+	            }
                 $datamod->timestamp = $tableaux['timestamp'][$i];
 
                 $datamod->voltage = $tableaux[$sequence][$i];
@@ -232,12 +250,15 @@ END;
             }
 
             $multi_releve->addStatement($name_statement);
+            R::commit();
 
         }
 
         $rTodelete = R::findOne('releve', 'name = ? and user_id = ?', [$name_statement_prefix, $_SESSION['bd_id']]);
         R::trash($rTodelete);
-
+        if(DEBUG){ // Analyse input data
+            error_log('Fin de saveData() à'.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /** Check a string's start.
@@ -253,12 +274,12 @@ END;
      * Creates a new statement into the database.
      * Defines the name, data mod and user.
      * @param $name Name of the statement.
-     * @return $statement The created statement.
+     * @return $id The id of the created statement.
      */
     private static function create_statement($name) {
         if (!R::findOne('releve', 'name = ? and user_id = ?', [$name, $_SESSION['bd_id']])) {
 
-            $mode = R::findOne('datamod', 'modname = ?', ['ElectroCardioGramme']);
+            $mode = R::findOne('datamod', 'modname = ?', ['ECG']);//['ElectroCardioGramme']);
 
             $user = $_SESSION['user'];
 
@@ -268,9 +289,7 @@ END;
             $statement->name = $name;
             $statement->description = "";
 
-            R::store($statement);
-
-            return $statement;
+            return R::store($statement);
         }
     }
 
