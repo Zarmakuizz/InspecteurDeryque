@@ -55,6 +55,7 @@ END;
 	    }
 
         if (CNavigation::isValidSubmit(array('name'), $_REQUEST)) {
+
             if (R::findOne('composition', 'name = ? and user_id = ?', array($_REQUEST['name'], $_SESSION['bd_id']))) {
                 new CMessage('Un relevé existe déjà avec le même nom', 'error');
 		CNavigation::redirectToApp('DataSample', 'choose');
@@ -64,7 +65,6 @@ END;
 		CNavigation::redirectToApp('DataSample', 'choose');
 
 		} else {
-
 		$tab_releve = $_POST['releve'];
 
                 $statement = R::dispense('composition');
@@ -84,7 +84,6 @@ END;
 				$state->end=$stat['end'];
 				$state->composition_id=$statement['id'];
 				R::store($state);
-
 		}
 
                 new CMessage('Relevé correctement ajouté');
@@ -189,7 +188,6 @@ END;
                 }
                 return;
             }
-
         }
 
         DataSampleView::showStatementsList();
@@ -579,7 +577,6 @@ HTML
         if(DEBUG){
             error_log('Class DataSample: end of remove() at '.date('H:i:s').PHP_EOL,3,'log.log');
 	    }
-
     }
 
     public function choosechange() {
