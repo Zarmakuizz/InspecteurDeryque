@@ -21,6 +21,10 @@ class Selection {
      * @param $end The timestamp of the last data of the selection
      */
     public function __construct($sName, $graphName, $begin, $end) {
+        if(DEBUG){
+            error_log('Class Selection: start of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $beans = R::find('releve', "name = ?", [$sName]);
 
         foreach ($beans as $bean) {
@@ -45,7 +49,10 @@ class Selection {
         $this->_selectionBean->begin = $begin;
         $this->_selectionBean->end = $end;
         $this->_selectionBean->composition_id = NULL;
-
+        
+        if(DEBUG){
+            error_log('Class Selection: end of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /**
@@ -64,6 +71,10 @@ class Selection {
      * FIXME This method could access to another user's statements.
      */
     public static function getSelections($sName) {
+        if(DEBUG){
+            error_log('Class Selection: start of getSelections() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $statements = R::find('releve', "name = ?", [$sName]);
         if ($statements == NULL) {
             $statements = R::find('multi_releve', "name = ?", [$sName]);
@@ -75,6 +86,10 @@ class Selection {
             $selections = R::find ( 'selection', 'releve_id = :id AND releve_type = :type AND composition_id IS NULL',$values );
             return $selections;
         }
+        
+        if(DEBUG){
+            error_log('Class Selection: end of getSelections() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /**

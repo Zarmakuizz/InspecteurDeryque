@@ -12,6 +12,9 @@ class DataMod extends AbstractMod {
 	 * @returns array containing all data types
 	 */
 	public static function getDataTypes() {
+        if(DEBUG){
+            error_log('Class DataMod: start of getDataTypes() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// Add internal and abstract data types
 		$data = [
 			new DataMod('EmptyData', null),
@@ -28,6 +31,11 @@ class DataMod extends AbstractMod {
 				$data[] = new DataMod($class, $folder);
 			}
 		}
+		
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of form() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
 		return $data;
 	}
@@ -38,6 +46,9 @@ class DataMod extends AbstractMod {
 	 * @return $datamod A DataMod object with the name and folder of a data type.
 	 */
 	public static function loadDataType($folder) {
+        if(DEBUG){
+            error_log('Class DataMod: start of loadDataTypes() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		$folder = self::secureFolder($folder);
 		if (!file_exists("Data/$folder/D$folder.php"))
 			return null;
@@ -45,12 +56,23 @@ class DataMod extends AbstractMod {
 		$class = "D$folder";
 		$mod = new DataMod($class, $folder);
 		$mod->display_prefs = explode(' ', $class::display_prefs);
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of loadDataType() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		return $mod;
 	}
 
 	/** Check availability of a given Data. */
 	public static function modExist($folder) {
+        if(DEBUG){
+            error_log('Class DataMod: start of modExist() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		$folder = self::secureFolder($folder);
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of modExist() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		return file_exists("Data/$folder/D$folder.php");
 	}
 
@@ -60,10 +82,17 @@ class DataMod extends AbstractMod {
 	 *	In the future, it could be interesting to do some dynamic code.
 	 */
 	public static function loadStorageType($id) {
+        if(DEBUG){
+            error_log('Class DataMod: start of loadStorageType() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		$storages = [
 			VideoStorage::storageConstant => 'VideoStorage',
 			SensAppStorage::storageConstant => 'SensAppStorage'];
-
+        
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of loadStorageType() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		return array_key_exists($id, $storages) ?
 			$storages[$id] : 'InternalStorage';
 	}
@@ -74,13 +103,36 @@ class DataMod extends AbstractMod {
 	 * @return A query request.
 	 */
 	public static function getStatement($name) {
-		return R::getRow(
+        if(DEBUG){
+            error_log('Class DataMod: start of getStatement() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+        if(DEBUG){ // Analyse input data
+                error_log('Début de getStatement()'.PHP_EOL,3,'log.log');
+	            //error_log('$name:'.$name.PHP_EOL, 3, "log.log");
+	            //error_log('$bd_id:'.$_SESSION['bd_id'].PHP_EOL, 3, "log.log");
+        }
+        $row = R::getRow(
 <<<SQL
 	select r.id, name, description, modname, storage, additional_data
 	from releve r, datamod d
-	where r.user_id = ? and r.mod_id = d.id and r.name = ?
+	where r.user_id = :id and r.mod_id = d.id and r.name = :name ;
 SQL
-		, [$_SESSION['bd_id'], $name]);
+		, [":id" => $_SESSION['bd_id'], ":name" => $name]);
+		if(DEBUG){ // Analyse input data
+		        $database = R::$adapter;
+		        //error_log('SQL:'.$database->getSQL().PHP_EOL,3,"log.log");
+		        //error_log('id:'.$_SESSION['bd_id'].PHP_EOL,3,'log.log');
+		        //error_log('name argument before escaping:'.$name.PHP_EOL,3,'log.log');
+		        //error_log('name argument after escaping:'.$database->escape($name).PHP_EOL,3,"log.log");
+	            //error_log('$row:'.PHP_EOL.print_r($row,true).PHP_EOL, 3, "log.log");
+	            error_log('Fin de getStatement()'.PHP_EOL,3,'log.log');
+	            /* !!! Empty !!! */
+        }
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of getStatement() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+		return $row; 
 		/*return R::getRow('select r.id, concat_ws("/", r.name, m.name) as name, description, modname, PicMinLine, PicMaxLine from multi_releve m, releve r, multi_releve_releve mr, datamod d where r.user_id = ? and r.mod_id = d.id and m.id = mr.multi_releve_id and mr.releve_id=r.id and r.name = ?', array($_SESSION['bd_id'], $name));*/
 	}
 
@@ -92,6 +144,9 @@ SQL
 	 * @return The result of the data saving query.
 	 */
 	public function save($user, $statement, $data) {
+        if(DEBUG){
+            error_log('Class DataMod: start of save() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		$vars = $this->getVariables();
 
 		$tuple = R::dispense('d_' . $this->folder);
@@ -102,6 +157,10 @@ SQL
 			$tuple->$key = $data->$key;
 		}
 
+				
+        if(DEBUG){
+            error_log('Class DataMod: end of save() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		return R::store($tuple);
 	}
 
@@ -169,14 +228,14 @@ SQL
 	 */
 
 	public static function getStatementComp() {
-		return R::getAll('select c.name, description, modname from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id order by c.name ', [$_SESSION['bd_id']]);
+		return R::getAll('select c.name, r.name as releve_name, description, modname from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id order by c.name ', [$_SESSION['bd_id']]);
 	}
     public static function getStatementCompWhot($user_id) {
         return R::getAll('select c.name, m.description, GROUP_CONCAT(modname) as modname from composition c, datamod d, releve r, multi_releve m, multi_releve_releve mr where c.releve_id = m.id and m.user_id = ? and m.id = mr.multi_releve_id and r.id = mr.releve_id and r.mod_id = d.id group by c.name ', array($user_id));
     }
 
 	public static function getStatementCompo($name) {
-		return R::getAll('select c.name, description, modname from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id and c.name=? ', [$_SESSION['bd_id'], $name]);
+		return R::getAll('select c.name, description, modname, c.id, c.releve_id from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id and c.name=? ', [$_SESSION['bd_id'], $name]);
 	}
 
 	public static function getStatementCompWithId() {
@@ -190,7 +249,7 @@ SQL
 		return R::getAll('select r.name, r.id from multi_extrait m, composition r, multi_releve_extrait mr where m.user_id=? and m.id=mr.multi_releve_id and  mr.composition_id=r.id and m.name=?', [$_SESSION['bd_id'], $name]);
 	}
 	public static function getCompo($name) {
-		return R::getAll('select name, id from composition where name=?', [$name]);
+		return R::getAll('select name, id, releve_id from composition where name = ?', [$name]);
 	}
 	public static function getCompoMulti($name) {
 		return R::getRow('select m.id, m.name, m.description ,modname from multi_extrait m, composition r, releve v, multi_releve_extrait mr, datamod d where m.user_id = ? and v.id = r.releve_id and m.id = mr.multi_releve_id and mr.composition_id=r.id and v.mod_id = d.id and m.name=?', [$_SESSION['bd_id'], $name]);

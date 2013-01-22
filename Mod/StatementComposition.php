@@ -12,6 +12,10 @@ class StatementComposition {
      * Get or store a new multiple statements
      */
     public function __construct($name, $user) {
+        if(DEBUG){
+            error_log('Class StatementComposition: start of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $beans = R::findOrDispense('multi_releve', "name = ?", [$name]);
 
         foreach ($beans as $bean) {
@@ -22,6 +26,10 @@ class StatementComposition {
         $this->_statementBean->user = $user;
 
         R::store($this->_statementBean);
+        
+        if(DEBUG){
+            error_log('Class StatementComposition: end of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /**

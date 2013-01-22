@@ -19,6 +19,10 @@ class Composition {
      * @param $cName Name of the composition.
      */
     public function __construct($sName, $cName) {
+        if(DEBUG){
+            error_log('Class Composition: start of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $beans = R::find('releve', "name = ?", [$sName]);
 
         foreach ($beans as $bean) {
@@ -39,6 +43,10 @@ class Composition {
         $this->_compositionBean->name = $cName;
         $this->_compositionBean->releve_id = $this->_statementBean->getID();
         $this->_compositionBean->releve_type = $this->_statementBean->getMeta('type');
+        
+        if(DEBUG){
+            error_log('Class Composition: end of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /**
@@ -80,6 +88,10 @@ class Composition {
      * FIXME This method could access to another user's statements.
      */
     public static function getCompositions($sName) {
+        if(DEBUG){
+            error_log('Class Composition: start of getCompositions() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $statements = R::find('releve', "name = ?", [$sName]);
         if ($statements == NULL) {
             $statements = R::find('multi_releve', "name = ?", [$sName]);
@@ -91,6 +103,10 @@ class Composition {
             $compositions = R::find('composition', 'releve_id = :id AND releve_type = :type', $values);
             return $compositions;
         }
+        
+        if(DEBUG){
+            error_log('Class Composition: end of __construct() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /**
