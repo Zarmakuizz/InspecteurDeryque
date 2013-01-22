@@ -176,7 +176,7 @@ SQL
     }
 
 	public static function getStatementCompo($name) {
-		return R::getAll('select c.name, description, modname from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id and c.name=? ', [$_SESSION['bd_id'], $name]);
+		return R::getAll('select c.name, description, modname, c.id, c.releve_id from composition c, datamod d, releve r where r.user_id = ? and r.id = c.releve_id and r.mod_id = d.id and c.name=? ', [$_SESSION['bd_id'], $name]);
 	}
 
 	public static function getStatementCompWithId() {

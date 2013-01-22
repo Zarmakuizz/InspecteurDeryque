@@ -288,7 +288,7 @@ animate_interface: function() {
 	$(this.extrac_button).click(function() {
 
 		var name_selec = prompt("Choose a name for your selection:", "");
-		if(name_selec != "")
+		if(name_selec.length != 0)
 		{
 
 			EventBus.listenOneTime('bounds', function(bounds)
