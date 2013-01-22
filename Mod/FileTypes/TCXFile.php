@@ -1,12 +1,14 @@
 <?php
 /* This file is released under the CeCILL-B V1 licence.*/
 
+/** Buggy TCX files import. */
 class TCXFile implements FileType {
 
     /** Check file's data type.
 	 * @param $file The file. NOTE: unused parameter.
 	 * @param $extension The file extension.
 	 * @return TRUE or FALSE.
+	 * FIXME needs a more accurate type detection. @see HL7File.php
 	 */
 	public static function isOfThisDataType($file, $extension) {
 		return $extension === ".tcx";

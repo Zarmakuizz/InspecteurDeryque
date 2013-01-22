@@ -12,6 +12,10 @@ class HL7File implements FileType {
 	 * @return TRUE if HL7 or FALSE.
 	 */
     public static function isOfThisDataType($file, $extension) {
+        if(DEBUG){
+            error_log('Class HL7File: start isOfThisDataType() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
         $xml = new XMLReader();
         if(!strncmp($file,'<?xml version="1.',17))// $file=xml
             $xml->xml($file);
@@ -24,6 +28,10 @@ class HL7File implements FileType {
         // Now we are at the root element
         if ($xml->localName != 'AnnotatedECG') return false;
         return ($xml->getAttribute('xmlns') == 'urn:hl7-org:v3');
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of isOfThisDataType() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
     /** Splits words separated by whitespace(s).
@@ -41,6 +49,9 @@ class HL7File implements FileType {
 	 * @param $file The file to get the data from.
 	 */
     public static function getImportableData($file) {
+        if(DEBUG){
+            error_log('Class HL7File: start getImportableData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
         echo <<<END
 		<table class="table table-bordered">
@@ -114,6 +125,10 @@ END;
 END;
 
         echo "</table>";
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of getImportableData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
     }
 
@@ -123,6 +138,9 @@ END;
      * @param $nameData Name of the kind of data.
      */
     private static function displayDataAssociationChoice($nameData) {
+        if(DEBUG){
+            error_log('Class HL7File: start displayDataAssociationChoice() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
         $statements_list = DataMod::getStatements();
         $sum = sha1($nameData);
         $new_url = CNavigation::generateUrlToApp('Data', 'form', ['iframe_mode' => true, 'return' => 'list']);
@@ -140,12 +158,19 @@ END;
 			<a class="btn" href="$new_url">Nouveau relevé</a>
 	    </div>
 END;
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of displayDataAssociationChoice() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
 	/** Store selection into the database.
 	 * @param $data Data from an xml string.
 	 */
     public static function submitSelection($data) {
+        if(DEBUG){
+            error_log('Class HL7File: start submitSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
         $dom = new DOMDocument();
 
         $dom->loadXML($data);
@@ -174,31 +199,21 @@ END;
         }
 
         //R::begin();
-        if(DEBUG) error_log("Début de la boucle foreach de submitSelection() à ".date('H:i:s').PHP_EOL, 3, "log.log");
-        /*
-        !!! Erreur par ici !!!
-        15 passages dans la boucle. Il n'y a qu'au dernier passage 
-        que l'on entre dans les deux if successifs.
-        */
         // storing data per each statement
         foreach ($_POST as $key => $post) {
-            if(DEBUG) error_log("A", 3, "log.log");
             if (self::startswith($key, "assoc_")) {
-                if(DEBUG) error_log("B", 3, "log.log");
                 $sum_assoc = strrchr($key, '_');
                 if (isset($_POST['data' . $sum_assoc])) {
-                    if(DEBUG) error_log("C", 3, "log.log");
                     self::saveData($post, $_POST['data' . $sum_assoc], $tableaux);
                 }
             }
         }
-        /*
-        !!! Cette étape n'est jamais atteinte. !!!
-        une erreur 418 est générée à la place.
-        */
-        if(DEBUG) error_log("Fin de la boucle foreach de submitSelection() à".date('H:i:s').PHP_EOL, 3, "log.log");
         //R::commit();
 
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of submitSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
         new CMessage('Vos relevés ont été ajoutés avec succès ! Vous pouvez en sélectionner d\'autres, ou bien revenir au Tableau de Bord.');
         CNavigation::redirectToApp('Import', 'dataSelection');
     }
@@ -209,14 +224,10 @@ END;
      * @param $data An array of data to store.
      */
     private static function saveData($name_statement_prefix, $data_type, $tableaux) {
-        if(DEBUG){ // Analyse input data
-            error_log('Début de saveData() à'.date('H:i:s').PHP_EOL,3,'log.log');
-	        //error_log('$name_statement_prefix:'.PHP_EOL.print_r($name_statement_prefix,true).PHP_EOL, 3, "log.log");
-	        //error_log('$data_type:'.PHP_EOL.print_r($data_type,true).PHP_EOL, 3, "log.log");
-	        //error_log('$tableaux:'.PHP_EOL.print_r($tableaux,true).PHP_EOL, 3, "/var/www/InspecteurDeryque/log.log");
+        if(DEBUG){
+            error_log('Class HL7File: start saveData() at '.date('H:i:s').PHP_EOL,3,'log.log');
 	    }
         $multi_releve = new StatementComposition($name_statement_prefix,$_SESSION['user']);
-
 
         for ($sequence = 1; $sequence < count($tableaux) - 1; $sequence++) {
             $name_statement = $name_statement_prefix . "_" . $tableaux['names'][$sequence] . "_";
@@ -225,26 +236,19 @@ END;
             $statement = DataMod::getStatement($name_statement);//r);
 
             $b_statement = R::load('releve', $statement['id']);
-            if(DEBUG){ // Analyse input data
-	            error_log('Relevé '.$name_statement.' créé à'.date('H:i:s').PHP_EOL,3,'log.log');
-	        }
             if (!$statement)
-                CTools::hackError(); /* !!! TEAPOT REACHED !!! */
-            R::begin();
+                CTools::hackError();
+
             $n_datamod = DataMod::loadDataType($statement['modname']);
             $variables = $n_datamod->getVariables();
 
             $datamod = $n_datamod->initialize();
 
+            R::begin();
             for ($i = 0; $i < count($tableaux['timestamp']); $i++) {
-                if(DEBUG){ // Analyse input data
-    	            error_log(' step '.$i.' à'.date('H:i:s').PHP_EOL,3,'log.log');
-	            }
                 $datamod->timestamp = $tableaux['timestamp'][$i];
 
                 $datamod->voltage = $tableaux[$sequence][$i];
-
-                //echo print_r($datamod);
 
                 $n_datamod->save($_SESSION['user'], $b_statement, $datamod);
             }
@@ -256,8 +260,9 @@ END;
 
         $rTodelete = R::findOne('releve', 'name = ? and user_id = ?', [$name_statement_prefix, $_SESSION['bd_id']]);
         R::trash($rTodelete);
-        if(DEBUG){ // Analyse input data
-            error_log('Fin de saveData() à'.date('H:i:s').PHP_EOL,3,'log.log');
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of saveData() at '.date('H:i:s').PHP_EOL,3,'log.log');
 	    }
     }
 
@@ -277,6 +282,9 @@ END;
      * @return $id The id of the created statement.
      */
     private static function create_statement($name) {
+        if(DEBUG){
+            error_log('Class HL7File: start create_statement() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
         if (!R::findOne('releve', 'name = ? and user_id = ?', [$name, $_SESSION['bd_id']])) {
 
             $mode = R::findOne('datamod', 'modname = ?', ['ECG']);//['ElectroCardioGramme']);
@@ -291,6 +299,10 @@ END;
 
             return R::store($statement);
         }
+        
+        if(DEBUG){
+            error_log('Class HL7File: end of create_statement() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
     }
 
 }

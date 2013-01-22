@@ -10,6 +10,7 @@ class GPXFile implements FileType {
 	 * @param $file The file. NOTE: unused parameter.
 	 * @param $extension The file extension.
 	 * @return TRUE or FALSE.
+	 * FIXME needs a more accurate type detection. @see HL7File.php
 	 */
 	public static function isOfThisDataType($file, $extension) {
 		return $extension === ".gpx";
@@ -17,6 +18,9 @@ class GPXFile implements FileType {
 
 	/** Display a form listing importable data from the incoming file. */
 	public static function getImportableData($file) {
+        if(DEBUG){
+            error_log('Class GPXFile: start of getImportableData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
 		$gpx = self::getData($file);
 
@@ -139,6 +143,10 @@ END;
 		}
 		echo "</table>";
 		//Import::deleteDirContent("Uploaded");
+        
+        if(DEBUG){
+            error_log('Class GPXFile: end of getImportableData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
     /**
@@ -159,6 +167,10 @@ END;
      * Every line of that table corresponds to one use of that method.
      */
 	private static function displayDataAssociationChoice($nameData) {
+        if(DEBUG){
+            error_log('Class GPXFile: start of displayDataAssociationChoice() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+
 		$statements_list = DataMod::getStatements();
 		$sum = sha1($nameData);
 		$new_url = CNavigation::generateUrlToApp('Data', 'form', ['iframe_mode' => true, 'return' => 'list']);
@@ -177,12 +189,20 @@ END;
 	    </div>
 END;
 		//DataImportView::showNewStatementForm($nameData);
+        
+        if(DEBUG){
+            error_log('Class GPXFile: end of displayDataAssociationChoice() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/** Store selection into the database.
 	 * @param $data Data from an xml string.
 	 */
 	public static function submitSelection($data) {
+        if(DEBUG){
+            error_log('Class GPXFile: start of submitSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+
 		$data = preg_replace('/<gpx.*?>/', '<gpx>', $data, 1);
 		$data = preg_replace('/<\\/tp1:(.+)>/', '</$1>', $data);
 		$data = preg_replace('/<tp1:(.+)>/', '<$1>', $data);
@@ -225,6 +245,10 @@ END;
 		}
 
 		R::commit();
+        
+        if(DEBUG){
+            error_log('Class GPXFile: end of getImportableData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		new CMessage('Vos relevés ont été ajoutés avec succès ! Vous pouvez en sélectionner d\'autres, ou bien revenir au Tableau de Bord.');
 		CNavigation::redirectToApp('Import', 'dataSelection');
 	}
@@ -235,6 +259,10 @@ END;
      * @param $data An array of data to store.
      */
 	private static function saveData($name_statement, $data_type, $data) {
+        if(DEBUG){
+            error_log('Class GPXFile: start of saveData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+
 		$statement = DataMod::getStatement($name_statement);
 		$b_statement = R::load('releve', $statement['id']);
 
@@ -326,6 +354,10 @@ END;
 		}
 
 		R::freeze(DB_FREEZE);
+        
+        if(DEBUG){
+            error_log('Class GPXFile: end of saveData() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
     /** Check a string's start.
