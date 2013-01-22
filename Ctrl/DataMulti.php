@@ -6,6 +6,9 @@
  */
 class DataMulti {
 	public function index() {
+        if(DEBUG){
+            error_log('Class DataMulti: start of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		CNavigation::setTitle('Multiple statements');
 
 		$statements = DataMod::getStatementsMulti();
@@ -13,12 +16,19 @@ class DataMulti {
 		DataMultiView::showStatementsList($statements);
 
 		DataMultiView::showAddButton();
+				
+        if(DEBUG){
+            error_log('Class DataMulti: end of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/**
 	 *	Store and modify multiple statement.
 	 */
 	public function form() {
+        if(DEBUG){
+            error_log('Class DataMulti: start of form() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
 		// The form mode (add a new statement by default)
 		$mode = isset($_REQUEST['mode']) ? $_REQUEST['mode'] : 'add';
@@ -119,12 +129,19 @@ class DataMulti {
 			'name' => '',
 			'releve' => [],
 			'desc' => ''], $_REQUEST), $mode);
+				
+        if(DEBUG){
+            error_log('Class DataMulti: end of form() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/**
 	 *	View a multiple statement.
 	 */
 	public function view() {
+        if(DEBUG){
+            error_log('Class DataMulti: start of view() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// Load the multiple statement
 		$statement = isset($_REQUEST['name']) ? DataMod::getMultiStatement($_REQUEST['name']) : false;
 
@@ -145,6 +162,10 @@ class DataMulti {
 			'name' => $statement->name,
 			'releve' => $releves,
 			'desc' => $statement->description], $_REQUEST), 'edit');
+				
+        if(DEBUG){
+            error_log('Class DataMulti: end of view() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 
@@ -152,6 +173,9 @@ class DataMulti {
 	 *	Remove a statement.
 	 */
 	public function remove() {
+        if(DEBUG){
+            error_log('Class DataMulti: start of remove() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// Load the statement
 		$statement = isset($_REQUEST['name']) ? DataMod::getMultiStatement($_REQUEST['name']) : false;
 
@@ -179,6 +203,10 @@ class DataMulti {
 				CNavigation::generateMergedUrl('DataMulti', 'view'));
 		}
 	}
+				
+        if(DEBUG){
+            error_log('Class DataMulti: end of remove() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 
 }
 ?>

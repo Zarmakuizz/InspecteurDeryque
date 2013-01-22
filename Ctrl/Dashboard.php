@@ -56,7 +56,7 @@ var URLS_DICTIONNARY = {
 </script>
 HTML;
 
-		// $this->tadam(); too annoying
+		// $this->tadam();// You should try it, it's really helpful for beginners
 	}
 
     /**

@@ -8,15 +8,28 @@ class Import {
 	 * show the file upload webpage.
 	 */
 	public function index() {
+        if(DEBUG){
+            error_log('Class Import: start of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		CNavigation::setTitle('Importer des données');
 		CNavigation::setDescription('GPX ou TCX ou HL7');
 		DataImportView::showFormImport();
+				
+        if(DEBUG){
+            error_log('Class Import: end of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+
 	}
 
 	/**
 	 * File upload method
 	 */
 	public function submit() {
+        if(DEBUG){
+            error_log('Class Import: start of submit() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		$folder = 'Uploaded/';
 		$file = $folder . sha1($_FILES['fichierXML']['name']);
 		$extension = strrchr($_FILES['fichierXML']['name'], '.');
@@ -39,20 +52,37 @@ class Import {
 			new CMessage($erreur, 'error');
 			CNavigation::redirectToApp('Import');
 		}
+				
+        if(DEBUG){
+            error_log('Class Import: end of submit() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+
 	}
 
 	/**
 	 * Show the "data to import" selection webpage
 	 */
 	public function dataSelection() {
+        if(DEBUG){
+            error_log('Class Import: start of dataSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		if (isset($_SESSION['fichierXML'])) {
 			$file = $_SESSION['fichierXML'];
 			if (file_exists($file)) {
 				CNavigation::setTitle('Selectionnez vos données à importer');
 				DataImportView::showDataSelection($file, $_SESSION['extFichierXML']);
+				
+                if(DEBUG){
+                    error_log('Class Import: end of dataSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	            }
+
 				return;
 			}
 		}
+                if(DEBUG){
+                    error_log('Class Import: end of dataSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	            }
 		CTools::hackError();
 	}
 
@@ -61,6 +91,10 @@ class Import {
 	 * Used to clean up the upload directory after an upload.
 	 */
 	public function deleteDirContent($dir_path) {
+        if(DEBUG){
+            error_log('Class Import: start of deleteDirContent() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		$dir = opendir($dir_path);
 		while (($file = readdir($dir)) !== false) {
 			$file_path = $dir_path . "/" . $file;
@@ -69,14 +103,22 @@ class Import {
 			}
 		}
 		closedir($dir);
+		
+        if(DEBUG){
+            error_log('Class Import: end of deleteDirContent() at '.date('H:i:s').PHP_EOL,3,'log.log');
+        }
 	}
 
 	/**
 	 * UGLY - this method uses 7 nested loops.
 	 * Displays some infos from a TCX file.
-	 * FIXME - TCX import leads to errors at the end of the procedure.
+	 * FIXME - TCX import leads to errors at the end of the procedure. TCX import IS BROKEN.
 	 */
 	public function DataDisplay($xml) {
+        if(DEBUG){
+            error_log('Class Import: start of dataDisplay() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		foreach ($xml->children() as $balise) {
 			if ($balise->getName() === "Folders" || $balise->getName() === "Workouts" || $balise->getName() === "Courses" || $balise->getName() === "Author") {
 				//rien
@@ -153,7 +195,11 @@ class Import {
 					}
 				}
 			}
-		}
+		} // end of foreach
+		
+        if(DEBUG){
+            error_log('Class Import: end of DataDisplay() at '.date('H:i:s').PHP_EOL,3,'log.log');
+        }
 	}
 
 	/**
@@ -161,6 +207,10 @@ class Import {
 	 * UGLY - this method relies on DataDisplay which has been tagged as UGLY.
 	 */
 	public function displayXML() {
+        if(DEBUG){
+            error_log('Class Import: start of displayXML() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		if (file_exists('test.tcx')) {
 			$text_xml = file_get_contents('test.tcx');
 			$text_xml = preg_replace('/<TrainingCenterDatabase.*?>/', '<TrainingCenterDatabase>', $text_xml, 1);
@@ -170,9 +220,17 @@ class Import {
 		} else {
 			new CMessage('Echec lors de l\'ouverture du fichier test.tcx.', 'error');
 		}
+		
+        if(DEBUG){
+            error_log('Class Import: end of displayXML() at '.date('H:i:s').PHP_EOL,3,'log.log');
+        }
 	}
 
 	public function submitSelection() {
+        if(DEBUG){
+            error_log('Class Import: start of submitSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		//pour calculer vitesse et calories :
 		$GLOBALS['ancienne_lat'] = null;
 		$GLOBALS['ancienne_lon'] = null;
@@ -195,6 +253,10 @@ class Import {
 				echo "L'inspecteur ne reconnait pas ce type de fichier.";
 			}
 		}
+		
+        if(DEBUG){
+            error_log('Class Import: end of submitSelection() at '.date('H:i:s').PHP_EOL,3,'log.log');
+        }
 	}
 
 }

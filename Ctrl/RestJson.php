@@ -11,7 +11,7 @@ define('NO_LOGIN_REDIRECTION', true);
  */
 class RestJson
 {
-
+    /** Encode data into json format */
 	private function sendJson($json)
 	{
 		header('Content-Type: application/json; charset=utf-8');
@@ -19,7 +19,8 @@ class RestJson
     		(READABLE_JSON ? JSON_PRETTY_PRINT : 0) | JSON_UNESCAPED_UNICODE);
 		exit();
 	}
-
+    
+    /** Index. This page should not be reached the classic way. */
 	public function index() {
 		$error = new Error();
 		$error->page_not_found();
@@ -320,7 +321,7 @@ class RestJson
 			    $id_s = $sim['id'];			
 			    $type_s = 'releve';
 		    }
-	    }	
+	    }
 	    foreach($multi as $mul){
 		    if($name_s === $mul['name']) 
 		    {

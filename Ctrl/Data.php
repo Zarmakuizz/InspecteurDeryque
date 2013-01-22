@@ -3,20 +3,26 @@
 
 /**
  * Manages statements.
+ * Controler used for the Statement views.
  */
 class Data
 {
-
-
-
+    /**
+     * Displays Statement index.
+     */
 	public function index() {
+        if(DEBUG){
+            error_log('Class Data: start of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		CNavigation::setTitle(_('Statements'));
 		CNavigation::setDescription(_('All your data are belong to us'));
-
+        
+        // Get simple statements
 		$simple_statements = DataMod::getStatements();
 		for($i=0;$i<count($simple_statements);$i++){
 			 $simple_statements[$i]['releve']='simple';}
-
+        
+        // Get multiple statements
 		$multi_statements = DataMod::getStatementsMulti();
 		for($i=0;$i<count($multi_statements);$i++){
 			 $multi_statements[$i]['releve']='multi';}
@@ -33,6 +39,7 @@ class Data
 		for($i=0;$i<count($multi_samples);$i++){
 			 $multi_samples[$i]['releve']='samples';}
 
+		// Display all statements
 		$s1 = CNavigation::array_concat($simple_statements, $multi_statements);
 		$s2 = CNavigation::array_concat($s1, $simple_sample);
 		$s3 = CNavigation::array_concat($s2, $multi_sample);
@@ -40,6 +47,9 @@ class Data
 		DataView::showStatementsList($final);
 
 		DataView::showAddButton();
+        if(DEBUG){
+            error_log('Class Data: end of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/**
@@ -47,6 +57,9 @@ class Data
 	 */
 	public function form() {
 
+        if(DEBUG){
+            error_log('Class Data: start of form() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// The form mode (add a new statement by default)
 		$mode = isset($_REQUEST['mode']) ? $_REQUEST['mode'] : 'add';
 
@@ -180,6 +193,10 @@ class Data
 						'sensapp' => [],
 						'video_location' => ''],$_REQUEST),
 			DataMod::getDataTypes(), $mode);
+				
+        if(DEBUG){
+            error_log('Class Data: end of form() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/**
@@ -187,6 +204,9 @@ class Data
 	 */
 	public function view()
 	{
+        if(DEBUG){
+            error_log('Class Data: start of view() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// Load the statement
 		$statement = isset($_REQUEST['name']) ? DataMod::getStatement($_REQUEST['name']) : false;
 
@@ -218,13 +238,19 @@ class Data
 						'storage' => intval($statement['storage']),
 						'sensapp' => $sensapp,
 						'video' => $video], DataMod::getDataTypes(), 'edit'); // edit mode
-	}
-
+				
+        if(DEBUG){
+            error_log('Class Data: end of view() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+    }
 	/**
 	 *	Remove a statement.
 	 */
 	public function remove()
 	{
+        if(DEBUG){
+            error_log('Class Data: start of remove() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// Load the statement
 		$statement = isset($_REQUEST['name']) ? DataMod::getStatement($_REQUEST['name']) : false;
 
@@ -258,6 +284,10 @@ class Data
 					CNavigation::generateMergedUrl('Data', 'remove', ['confirm' => 'yes']),
 					CNavigation::generateMergedUrl('Data', 'view'));
 		}
+				
+        if(DEBUG){
+            error_log('Class Data: end of remove() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 }
 ?>

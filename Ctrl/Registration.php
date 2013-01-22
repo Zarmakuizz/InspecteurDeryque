@@ -7,13 +7,25 @@ define('NO_LOGIN_REQUIRED', true);
 class Registration
 {
 	public function index() {
+        if(DEBUG){
+            error_log('Class Registration: start of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		CNavigation::setTitle('Enregistrement');
 		CNavigation::setDescription('Créez votre compte gratuitement !');
 
 		RegistrationView::showForm();
+				
+        if(DEBUG){
+            error_log('Class Registration: end of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
     /** When the user submits its login data, check them before registering him/her. */
 	public function submit() {
+        if(DEBUG){
+            error_log('Class Registration: start of submit() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 	    // First validation datas have to be valid
 		if (CNavigation::isValidSubmit(['nom', 'mail', 'password'], $_POST)) {
 		    // Check the email address
@@ -49,6 +61,10 @@ class Registration
 		else { // Case invalid POST data.
 			CTools::hackError();
 		}
+				
+        if(DEBUG){
+            error_log('Class Registration: end of submit() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 }
 ?>

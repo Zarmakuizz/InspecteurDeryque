@@ -8,13 +8,24 @@ class Display {
 	 *	Load is the default function.
 	 */
 	public function index() {
+        if(DEBUG){
+            error_log('Class Display: start of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
+	    
 		$this->load();
+				
+        if(DEBUG){
+            error_log('Class Display: end of index() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 
 	/**
 	 *	Load the display in a iframe.
 	 */
 	public function load() {
+        if(DEBUG){
+            error_log('Class Display: start of load() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 		// The header bar is useless here
 		define('NO_HEADER_BAR', true);
 
@@ -38,6 +49,10 @@ class Display {
 
 		// Ask to the display object what to display
 		$g->show();
+				
+        if(DEBUG){
+            error_log('Class Display: end of load() at '.date('H:i:s').PHP_EOL,3,'log.log');
+	    }
 	}
 }
 ?>
